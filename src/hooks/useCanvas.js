@@ -13,7 +13,6 @@ const useCanvas = (props) => {
 
     const render = () => {
       frameCount++;
-      // fix miii
       draw(context, frameCount);
       animationFrameId = window.requestAnimationFrame(render);
     };

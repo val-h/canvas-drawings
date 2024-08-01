@@ -1,49 +1,82 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react";
 
-const DrawingBoard = () => {
-    const fillStyle = 'black'
-    const lineWidth = 5;
+import Button from "./Button";
+import AvailablePointers from "./AvailablePointers";
+import { DEFAULT_POINTER } from "../enums";
 
-    const [context, setContext] = useState(null);
-    const [isDrawing, setIsDrawing] = useState(false);
-    const [lastPos, setLastPos] = useState(null);
+const DrawingBoard = ({ clear }) => {
+  const fillStyle = "black";
+  const lineWidth = window.pointerSize;
 
-    const handleMouseDown = (e) => {
-        const { offsetX, offsetY } = e.nativeEvent;
-        setIsDrawing(true)
-        setLastPos({x: offsetX, y: offsetY})
+  const [context, setContext] = useState(null);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [lastPos, setLastPos] = useState(null);
+  const [pointerSize, setPointerSize] = useState(DEFAULT_POINTER);
+
+  const handleMouseDown = (e) => {
+    const { offsetX, offsetY } = e.nativeEvent;
+    setIsDrawing(true);
+    setLastPos({ x: offsetX, y: offsetY });
+  };
+  const handleMouseMove = (e) => {
+    if (!isDrawing) return;
+
+    const { offsetX, offsetY } = e.nativeEvent;
+
+    if (isDrawing === true) {
+      context.beginPath();
+      context.moveTo(lastPos.x, lastPos.y);
+      context.lineTo(offsetX, offsetY);
+      context.stroke();
+      setLastPos({ x: offsetX, y: offsetY });
     }
-    const handleMouseMove = (e) => {
-        if (!isDrawing) return;
+  };
+  const handleMouseUp = (e) => {
+    setIsDrawing(false);
+  };
 
-        const { offsetX, offsetY } = e.nativeEvent;
+  const handleClearBoard = () => {
+    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+  };
 
-        if (isDrawing === true) {
-            context.beginPath()
-            context.moveTo(lastPos.x, lastPos.y)
-            context.lineTo(offsetX, offsetY);
-            context.stroke();
-            setLastPos({x: offsetX, y: offsetY});
-        }
-    }
-    const handleMouseUp = (e) => {
-        setIsDrawing(false);
-    }
+  const handlePointerSizeChange = (size) => setPointerSize(size);
 
-    const canvasRef = useRef(null);
-    
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        const context = canvas.getContext('2d');
+  const canvasRef = useRef(null);
 
-        context.fillStyle = fillStyle;
-        context.lineWidth = lineWidth;
-        context.lineCap = 'round';
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const context = canvas.getContext("2d");
 
-        setContext(context);
-    }, [])
+    context.fillStyle = fillStyle;
+    context.lineWidth = lineWidth;
+    context.lineCap = "round";
 
-    return <canvas onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} ref={canvasRef} height={800} width={800} className="border shadow"></canvas>
-}
+    setContext(context);
+  }, []);
+
+  return (
+    <div>
+      <canvas
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        ref={canvasRef}
+        height={800}
+        width={800}
+        className="border shadow"
+      ></canvas>
+
+      <div className="w-full flex items-center justify-start">
+        <Button onClick={handleClearBoard} label="Clear Board" />
+        <AvailablePointers
+          pointerSize={pointerSize}
+          changePointerSize={handlePointerSizeChange}
+        />
+      </div>
+    </div>
+  );
+};
 
 export default DrawingBoard;
+
+// endgoal: make it multiplayer

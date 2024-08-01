@@ -1,15 +1,14 @@
-import Canvas from "./components/Canvas"
-import DrawingBoard from "./components/DrawingBoard"
+import Canvas from "./components/Canvas";
+import DrawingBoard from "./components/DrawingBoard";
 
 function App() {
-
   const drawPing = (context, frameCount) => {
-    context.clearRect(0, 0, context.canvas.width, context.canvas.height)
-    context.fillStyle = '#000000'
-    context.beginPath()
-    context.arc(50, 100, 20*Math.sin(frameCount*0.05)**2, 0, 2*Math.PI)
-    context.fill()
-  }
+    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+    context.fillStyle = "#000000";
+    context.beginPath();
+    context.arc(50, 100, 20 * Math.sin(frameCount * 0.05) ** 2, 0, 2 * Math.PI);
+    context.fill();
+  };
 
   const drawSmile = (context, frameCount) => {
     context.beginPath();
@@ -21,7 +20,7 @@ function App() {
     context.moveTo(95, 65);
     context.arc(90, 65, 5, 0, Math.PI * 2, true); // Right eye
     context.stroke();
-  }
+  };
 
   const drawHeart = (context, frameCount) => {
     context.beginPath();
@@ -34,16 +33,18 @@ function App() {
     context.bezierCurveTo(130, 62.5, 130, 25, 100, 25);
     context.bezierCurveTo(85, 25, 75, 37, 75, 40);
     context.fill();
-  }
+  };
 
   return (
-    <main className="flex flex-col justify-center items-center h-dvh w-dvw bg-gray-50">
-      <h1 className="text-5xl font-bold text-blue-500/70 mb-4">Canvas Drawing</h1>
+    <main className="flex flex-col justify-center items-center h-dvh w-dvw bg-gray-100">
+      <h1 className="text-5xl font-bold text-blue-500/70 mb-4">
+        Canvas Drawing
+      </h1>
       {/* <Canvas draw={drawHeart} /> */}
 
       <DrawingBoard />
     </main>
-  )
+  );
 }
 
-export default App
+export default App;
