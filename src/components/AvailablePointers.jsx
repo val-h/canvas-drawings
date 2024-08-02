@@ -10,9 +10,7 @@ const AvailablePointers = ({ pointerSize, changePointerSize }) => {
       {POINTER_SIZES.map((size) => (
         <VisualPointer
           key={size}
-          onClick={() => {
-            changePointerSize(size);
-          }}
+          onClick={() => changePointerSize(size)}
           diameter={size}
           isSelected={size === pointerSize}
         />
@@ -22,13 +20,12 @@ const AvailablePointers = ({ pointerSize, changePointerSize }) => {
 };
 
 const VisualPointer = ({ onClick, diameter, isSelected }) => {
-  console.log("size: ", diameter, typeof diameter);
   return (
     <div
-      onClick={onClick}
+      onClick={() => onClick(diameter)}
       style={{ width: `${diameter}px`, height: `${diameter}px` }}
       className={`bg-black rounded-full ${
-        isSelected ? "outline outline-gray-600 p-2" : ""
+        isSelected ? "outline outline-gray-400" : ""
       }`}
     ></div>
   );

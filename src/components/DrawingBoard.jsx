@@ -6,7 +6,6 @@ import { DEFAULT_POINTER } from "../enums";
 
 const DrawingBoard = ({ clear }) => {
   const fillStyle = "black";
-  const lineWidth = window.pointerSize;
 
   const [context, setContext] = useState(null);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -39,7 +38,10 @@ const DrawingBoard = ({ clear }) => {
     context.clearRect(0, 0, context.canvas.width, context.canvas.height);
   };
 
-  const handlePointerSizeChange = (size) => setPointerSize(size);
+  const handlePointerSizeChange = (size) => {
+    setPointerSize(size);
+    context.lineWidth = size;
+  };
 
   const canvasRef = useRef(null);
 
@@ -48,7 +50,7 @@ const DrawingBoard = ({ clear }) => {
     const context = canvas.getContext("2d");
 
     context.fillStyle = fillStyle;
-    context.lineWidth = lineWidth;
+    context.lineWidth = pointerSize;
     context.lineCap = "round";
 
     setContext(context);
