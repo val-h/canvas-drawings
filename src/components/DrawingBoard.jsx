@@ -2,15 +2,15 @@ import { useEffect, useRef, useState } from "react";
 
 import Button from "./Button";
 import AvailablePointers from "./AvailablePointers";
-import { DEFAULT_POINTER } from "../enums";
+import { DEFAULT_COLOR, DEFAULT_POINTER } from "../enums";
+import ColorSelector from "./ColorSelector";
 
-const DrawingBoard = ({ clear }) => {
-  const fillStyle = "black";
-
+const DrawingBoard = () => {
   const [context, setContext] = useState(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [lastPos, setLastPos] = useState(null);
   const [pointerSize, setPointerSize] = useState(DEFAULT_POINTER);
+  const [strokeStyle, setStrokeStyle] = useState(DEFAULT_COLOR.hex);
 
   const handleMouseDown = (e) => {
     const { offsetX, offsetY } = e.nativeEvent;
@@ -43,13 +43,18 @@ const DrawingBoard = ({ clear }) => {
     context.lineWidth = size;
   };
 
+  const handleStrokeStyleChange = (color) => {
+    setStrokeStyle(color);
+    context.strokeStyle = color;
+  };
+
   const canvasRef = useRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const context = canvas.getContext("2d");
 
-    context.fillStyle = fillStyle;
+    context.strokeStyle = strokeStyle;
     context.lineWidth = pointerSize;
     context.lineCap = "round";
 
@@ -73,6 +78,10 @@ const DrawingBoard = ({ clear }) => {
         <AvailablePointers
           pointerSize={pointerSize}
           changePointerSize={handlePointerSizeChange}
+        />
+        <ColorSelector
+          selectedColor={strokeStyle}
+          changeColor={handleStrokeStyleChange}
         />
       </div>
     </div>

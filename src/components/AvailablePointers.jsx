@@ -24,7 +24,7 @@ const VisualPointer = ({ onClick, diameter, isSelected }) => {
     <div
       onClick={() => onClick(diameter)}
       style={{ width: `${diameter}px`, height: `${diameter}px` }}
-      className={`bg-black rounded-full ${
+      className={`bg-black rounded-full cursor-pointer ${
         isSelected ? "outline outline-gray-400" : ""
       }`}
     ></div>
