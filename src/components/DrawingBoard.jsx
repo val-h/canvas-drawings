@@ -32,16 +32,16 @@ const DrawingBoard = () => {
   // redraw function - runtime complexity - o(n^2)
   // try to find optimizations
   const drawHistory = () => {
+    if (actionHistory.length === 0) return;
+
     handleClearBoard();
 
-    // no pointer size param
     const lastAction = actionHistory[actionHistory.length - 1];
     console.log(lastAction);
 
     for (let i = 0; i < actionHistory.length - 1; i++) {
       const action = actionHistory[i];
 
-      // odd bug of stroke style changes on undo - pointerSize missing
       context.strokeStyle = action.color;
       context.lineWidth = action.pointerSize;
       action.lines.forEach((line) => {
@@ -76,7 +76,9 @@ const DrawingBoard = () => {
     });
 
     setActionHistory([...actionHistory, firstAction]);
-    setRedoHistory(redoHistory.splice(1));
+    redoHistory.length > 1
+      ? setRedoHistory(redoHistory.splice(1))
+      : setRedoHistory([]);
   };
 
   const handleUndo = () => {
@@ -111,6 +113,7 @@ const DrawingBoard = () => {
 
       setCurrentAction({
         color: strokeStyle,
+        pointerSize: pointerSize,
         lines: [
           ...currentAction.lines,
           { moveTo: { ...lastPos }, lineTo: { offsetX, offsetY } },
