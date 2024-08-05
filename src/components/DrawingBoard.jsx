@@ -22,26 +22,35 @@ const DrawingBoard = () => {
     lines: [],
   });
 
+  const draw = (moveToX, moveToY, lineToX, lineToY) => {
+    context.beginPath();
+    context.moveTo(moveToX, moveToY);
+    context.lineTo(lineToX, lineToY);
+    context.stroke();
+  };
+
   // redraw function - runtime complexity - o(n^2)
   // try to find optimizations
   const drawHistory = () => {
     handleClearBoard();
 
-    // pop the latest action history to a redo stack
-    // check if pop would work with state variable if saved at the end
-    const lastAction = actionHistory[actionHistory.length];
+    // no pointer size param
+    const lastAction = actionHistory[actionHistory.length - 1];
+    console.log(lastAction);
 
     for (let i = 0; i < actionHistory.length - 1; i++) {
       const action = actionHistory[i];
 
-      // odd bug of stroke style changes on undo
+      // odd bug of stroke style changes on undo - pointerSize missing
       context.strokeStyle = action.color;
+      context.lineWidth = action.pointerSize;
       action.lines.forEach((line) => {
-        console.log(line);
-        context.beginPath();
-        context.moveTo(line.moveTo.x, line.moveTo.y);
-        context.lineTo(line.lineTo.offsetX, line.lineTo.offsetY);
-        context.stroke();
+        draw(
+          line.moveTo.x,
+          line.moveTo.y,
+          line.lineTo.offsetX,
+          line.lineTo.offsetY
+        );
       });
     }
 
@@ -49,16 +58,39 @@ const DrawingBoard = () => {
     setRedoHistory([lastAction, ...redoHistory]);
   };
 
+  const drawHistoryRedo = () => {
+    if (redoHistory.length === 0) return;
+
+    const firstAction = redoHistory[0];
+    console.log(firstAction), redoHistory;
+
+    context.strokeStyle = firstAction.color;
+    context.lineWidth = firstAction.pointerSize;
+    firstAction.lines.forEach((line) => {
+      draw(
+        line.moveTo.x,
+        line.moveTo.y,
+        line.lineTo.offsetX,
+        line.lineTo.offsetY
+      );
+    });
+
+    setActionHistory([...actionHistory, firstAction]);
+    setRedoHistory(redoHistory.splice(1));
+  };
+
   const handleUndo = () => {
     drawHistory();
   };
 
   const handleRedo = () => {
-    // todo
+    drawHistoryRedo();
   };
 
   const handleMouseDown = (e) => {
     const { offsetX, offsetY } = e.nativeEvent;
+    context.strokeStyle = strokeStyle;
+    context.lineWidth = pointerSize;
     setIsDrawing(true);
     setLastPos({ x: offsetX, y: offsetY });
     setCurrentAction({
@@ -75,13 +107,8 @@ const DrawingBoard = () => {
     const { offsetX, offsetY } = e.nativeEvent;
 
     if (isDrawing === true) {
-      //export to draw function
-      context.beginPath();
-      context.moveTo(lastPos.x, lastPos.y);
-      context.lineTo(offsetX, offsetY);
-      context.stroke();
+      draw(lastPos.x, lastPos.y, offsetX, offsetY);
 
-      //something of the sorts
       setCurrentAction({
         color: strokeStyle,
         lines: [
