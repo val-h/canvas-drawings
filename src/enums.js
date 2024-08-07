@@ -1,3 +1,6 @@
+// Drawing History
+export const MAX_ACTION_HISTORY = 200;
+
 // Pointer
 export const POINTER_SIZES = [7, 10, 14, 18, 22];
 export const DEFAULT_POINTER = POINTER_SIZES[2];

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 import Button from "./Button";
 import AvailablePointers from "./AvailablePointers";
-import { DEFAULT_COLOR, DEFAULT_POINTER } from "../enums";
+import { DEFAULT_COLOR, DEFAULT_POINTER, MAX_ACTION_HISTORY } from "../enums";
 import ColorSelector from "./ColorSelector";
 
 // TODO: Add the PenIcon as a cursor
@@ -15,7 +15,7 @@ const DrawingBoard = () => {
 
   // History state
   const [actionHistory, setActionHistory] = useState([]);
-  const [redoHistory, setRedoHistory] = useState([]); // todo
+  const [redoHistory, setRedoHistory] = useState([]);
   const [currentAction, setCurrentAction] = useState({
     color: strokeStyle,
     pointerSize: pointerSize,
@@ -31,6 +31,7 @@ const DrawingBoard = () => {
 
   // redraw function - runtime complexity - o(n^2)
   // try to find optimizations
+  // Odd bug where a small portion from the end line of an actions is considered an action
   const drawHistory = () => {
     if (actionHistory.length === 0) return;
 
@@ -54,6 +55,7 @@ const DrawingBoard = () => {
       });
     }
 
+    //possibly remove over limit actions here
     setActionHistory(actionHistory.splice(0, actionHistory.length - 1));
     setRedoHistory([lastAction, ...redoHistory]);
   };
@@ -81,14 +83,6 @@ const DrawingBoard = () => {
       : setRedoHistory([]);
   };
 
-  const handleUndo = () => {
-    drawHistory();
-  };
-
-  const handleRedo = () => {
-    drawHistoryRedo();
-  };
-
   const handleMouseDown = (e) => {
     const { offsetX, offsetY } = e.nativeEvent;
     context.strokeStyle = strokeStyle;
@@ -102,7 +96,6 @@ const DrawingBoard = () => {
     });
   };
 
-  //FIX: onMouseOut - stop drawing
   const handleMouseMove = (e) => {
     if (!isDrawing) return;
 
@@ -126,11 +119,24 @@ const DrawingBoard = () => {
 
   const handleMouseUp = (e) => {
     setIsDrawing(false);
-    setActionHistory([...actionHistory, currentAction]);
+    const totalActions = actionHistory.length + redoHistory.length;
+    if (totalActions > MAX_ACTION_HISTORY - 2) {
+      setActionHistory([
+        ...actionHistory.splice(1, actionHistory.length),
+        currentAction,
+      ]);
+    } else {
+      setActionHistory([...actionHistory, currentAction]);
+    }
+    setRedoHistory([]);
   };
 
   const handleClearBoard = () => {
     context.fillRect(0, 0, context.canvas.width, context.canvas.height);
+
+    // For now reset the history from here
+    setActionHistory([]);
+    setRedoHistory([]);
   };
 
   const handlePointerSizeChange = (size) => {
@@ -165,6 +171,7 @@ const DrawingBoard = () => {
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
         ref={canvasRef}
         height={800}
         width={800}
@@ -183,8 +190,8 @@ const DrawingBoard = () => {
         />
       </div>
       <div className="w-full flex items-center justify-start">
-        <Button onClick={handleUndo} label="Undo" />
-        <Button onClick={handleRedo} label="Redo" className="ml-4" />
+        <Button onClick={drawHistory} label="Undo" />
+        <Button onClick={drawHistoryRedo} label="Redo" className="ml-4" />
       </div>
     </div>
   );
