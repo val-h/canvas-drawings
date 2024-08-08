@@ -4,7 +4,7 @@ import ColorDropIcon from "../icons/ColorDropIcon";
 
 const ColorSelector = ({ changeColor, selectedColor }) => {
   return (
-    <div className="flex justify-center items-center gap-4 border shadow px-4 py-3 ml-4">
+    <div className="flex flex-col bg-white justify-center items-center gap-4 border shadow px-4 py-3">
       {COLORS.map((color) => (
         <div
           key={color.name}

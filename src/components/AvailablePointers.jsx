@@ -4,7 +4,7 @@ const AvailablePointers = ({ pointerSize, changePointerSize }) => {
   return (
     <div
       className={
-        "flex justify-center items-center gap-4 border shadow p-4 ml-4"
+        "flex flex-col justify-center items-center bg-white gap-4 border shadow p-4"
       }
     >
       {POINTER_SIZES.map((size) => (

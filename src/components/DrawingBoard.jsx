@@ -166,7 +166,7 @@ const DrawingBoard = () => {
   }, []);
 
   return (
-    <div>
+    <div className="flex justify-center">
       <canvas
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
@@ -178,8 +178,10 @@ const DrawingBoard = () => {
         className="border shadow"
       ></canvas>
 
-      <div className="w-full flex items-center justify-start">
-        <Button onClick={handleClearBoard} label="Clear Board" />
+      <div className="w-32 flex flex-col ml-4 gap-4">
+        <Button onClick={handleClearBoard} label="Clear" />
+        <Button onClick={drawHistory} label="Undo" />
+        <Button onClick={drawHistoryRedo} label="Redo" />
         <AvailablePointers
           pointerSize={pointerSize}
           changePointerSize={handlePointerSizeChange}
@@ -188,10 +190,6 @@ const DrawingBoard = () => {
           selectedColor={strokeStyle}
           changeColor={handleStrokeStyleChange}
         />
-      </div>
-      <div className="w-full flex items-center justify-start">
-        <Button onClick={drawHistory} label="Undo" />
-        <Button onClick={drawHistoryRedo} label="Redo" className="ml-4" />
       </div>
     </div>
   );
